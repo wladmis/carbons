@@ -33,12 +33,7 @@ PKGCFG_L=$(GLIB_LDFLAGS) \
 CFLAGS=-std=c11 -Wall -g -Wstrict-overflow -fPIC -shared -D_XOPEN_SOURCE=700 -D_BSD_SOURCE -D_DEFAULT_SOURCE $(PKGCFG_C) $(HEADERS)
 PLUGIN_CPPFLAGS=-DPURPLE_PLUGINS
 
-ifneq ("$(wildcard /etc/redhat-release)","")
-	LJABBER?=-lxmpp
-else
-	LJABBER?=-ljabber
-endif
-LFLAGS= -ldl -lm $(PKGCFG_L) $(LJABBER)
+LFLAGS= -ldl -lm $(PKGCFG_L) -ljabber
 
 all: $(BDIR)/carbons.so
 
