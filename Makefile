@@ -38,13 +38,7 @@ CFLAGS_C= $(CFLAGS) -fPIC -shared
 CFLAGS_T= $(CFLAGS) -O0
 PLUGIN_CPPFLAGS=-DPURPLE_PLUGINS
 
-ifneq ("$(wildcard /etc/redhat-release)","")
-	LJABBER?=-lxmpp
-else
-	LJABBER?=-ljabber
-endif
-
-LFLAGS= -ldl -lm $(PKGCFG_L) $(LJABBER)
+LFLAGS= -ldl -lm $(PKGCFG_L) -ljabber
 LFLAGS_T= $(LFLAGS) -lpurple -lcmocka -Wl,-rpath,$(PURPLE_DIR) \
 	-Wl,--wrap=purple_account_is_connected \
 	-Wl,--wrap=purple_account_get_connection \
