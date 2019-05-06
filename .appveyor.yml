@@ -1,0 +1,38 @@
+version: 0.2.2
+
+image: Ubuntu1804
+
+install:
+- sh: sudo apt-get update
+- sh: sudo apt-get install -y libpurple-dev libglib2.0-dev libxml2-dev libcmocka-dev mingw-w64 unzip --no-install-recommends
+
+build_script:
+- sh: make
+- sh: make win
+
+test_script:
+- sh: CMOCKA_MESSAGE_OUTPUT=XML CMOCKA_XML_FILE=build/cmocka_results.xml make test
+
+after_test:
+- sh: curl -v -F "file=@$APPVEYOR_BUILD_FOLDER/build/cmocka_results.xml" "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
+- sh: bash <(curl -s https://codecov.io/bash) -g test/ -B $APPVEYOR_REPO_BRANCH -b $APPVEYOR_BUILD_VERSION
+
+cache:
+  - win32_dev
+
+artifacts:
+  - path: build/carbons.so
+    name: carbons-$APPVEYOR_BUILD_VERSION-$APPVEYOR_REPO_COMMIT.so
+  - path: build/carbons.dll
+    name: carbons-$APPVEYOR_BUILD_VERSION-$APPVEYOR_REPO_COMMIT.dll
+
+deploy:
+  description: 'Release description'
+  provider: GitHub
+  auth_token:
+    secure: cdAyB4V+IR862PUMggKUTfrWBlZa3VUg5tolJzARYajRxWLiYGzw2VQcAPpmHZsL
+  artifact: build/carbons.so,build/carbons.dll
+  draft: true
+  on:
+    branch: master        
+    APPVEYOR_REPO_TAG: true
